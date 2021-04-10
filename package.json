@@ -1,0 +1,23 @@
+{
+  "name": "bookindex2",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Where did I put that book",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/TehShrike/bookindex2.git"
+  },
+  "author": "TehShrike",
+  "license": "WTFPL",
+  "bugs": {
+    "url": "https://github.com/TehShrike/bookindex2/issues"
+  },
+  "homepage": "https://github.com/TehShrike/bookindex2#readme",
+  "dependencies": {
+    "httpie": "^1.1.2"
+  }
+}
