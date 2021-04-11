@@ -5,7 +5,9 @@
   "description": "Where did I put that book",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "uvu",
+    "create_symlinks": "symlink shared node_modules/shared",
+    "postinstall": "npm run create_symlinks"
   },
   "repository": {
     "type": "git",
@@ -18,6 +20,14 @@
   },
   "homepage": "https://github.com/TehShrike/bookindex2#readme",
   "dependencies": {
-    "httpie": "^1.1.2"
+    "cli-menu": "^1.0.0",
+    "httpie": "^1.1.2",
+    "mysql2": "^2.2.5",
+    "sql-concat": "^3.0.0",
+    "sql-tagged-template-literal": "^1.1.0",
+    "symlink-cli": "^1.0.0"
+  },
+  "devDependencies": {
+    "uvu": "^0.5.1"
   }
 }

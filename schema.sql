@@ -27,8 +27,8 @@ CREATE TABLE `author` (
 CREATE TABLE `book` (
   `book_id` int unsigned NOT NULL AUTO_INCREMENT,
   `title` varchar(200) NOT NULL,
-  `subtitle` varchar(500) NOT NULL,
-  `location_id` int unsigned NOT NULL,
+  `subtitle` varchar(500),
+  `location_id` int unsigned,
   PRIMARY KEY (`book_id`),
   KEY `location` (`location_id`),
   CONSTRAINT `book_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`)
