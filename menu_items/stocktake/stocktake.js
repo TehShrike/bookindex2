@@ -25,15 +25,11 @@ export default async({ scanner_file_path, isbn_lookup, mysql }) =>
 			isbn: async isbn => {
 				const [ [ book_in_db ] ] = await mysql.query(select_book_by_isbn(isbn))
 
-				console.log(`book_in_db?`, !!book_in_db)
 				if (book_in_db) {
 					return book_in_db
 				}
 
-				console.log(`Looking up book via API`)
 				const book_from_api = await isbn_lookup(isbn)
-
-				console.log(`book from api`, book_from_api)
 
 				if (!book_from_api) {
 					return null
@@ -51,9 +47,8 @@ export default async({ scanner_file_path, isbn_lookup, mysql }) =>
 		}
 
 		const file_contents = await readFile(scanner_file_path, { encoding: `utf8` })
-		console.log(file_contents)
+
 		const barcodes = parse_csv(file_contents)
-		console.log(barcodes)
 
 		const scans_with_data = await Promise.all(
 			barcodes.map(async scan => {
@@ -64,11 +59,33 @@ export default async({ scanner_file_path, isbn_lookup, mysql }) =>
 
 				return {
 					...scan,
-					[scan.type]: data,
+					data,
 				}
 			}),
 		)
 
-		console.log(`This is what would ostensibly get acted on in order to update locations:`)
-		console.log(scans_with_data)
+		let current_location_id = null
+		await Promise.all(
+			scans_with_data.map(async scan => {
+				if (scan.type === `location`) {
+					const location = scan.data
+					console.log(`Scanned location`, location.name)
+					current_location_id = location.location_id
+				} else if (current_location_id && scan.type === `isbn` && scan.data) {
+					const book = scan.data
+					console.log(`Assigning location to`, book.title)
+
+					mysql.query(`
+						UPDATE book
+						SET location_id = ?
+						WHERE book_id = ?
+					`, [
+						current_location_id,
+						book.book_id,
+					])
+				} else {
+					console.log(`Ignoring scan`, scan)
+				}
+			}),
+		)
 	})

@@ -9,7 +9,7 @@ export default ({ api_key }) => isbn => get(
 	`https://content-books.googleapis.com/books/v1/volumes?q=isbn%3A${ isbn }&key=${ api_key }`,
 ).then(
 	({ data }) => {
-		if (data.items.length === 0) {
+		if (!Array.isArray(data.items) || data.items.length === 0) {
 			return null
 		}
 
