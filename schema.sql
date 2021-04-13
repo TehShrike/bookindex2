@@ -29,6 +29,7 @@ CREATE TABLE `book` (
   `title` varchar(200) NOT NULL,
   `subtitle` varchar(500),
   `location_id` int unsigned,
+  `source` varchar(50),
   PRIMARY KEY (`book_id`),
   KEY `location` (`location_id`),
   CONSTRAINT `book_location` FOREIGN KEY (`location_id`) REFERENCES `location` (`location_id`)

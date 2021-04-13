@@ -6,15 +6,16 @@ const insert_single_column = (table, column, values) => `
 `
 
 export default async(mysql, book_from_api) => {
-	const { title, subtitle, authors, isbns } = book_from_api
+	console.log(`trying to insert`, book_from_api)
+	const { title, subtitle, authors, isbns, source } = book_from_api
 
 	await Promise.all([
-		mysql.query(insert_single_column(`author`, `name`, authors)),
+		authors && mysql.query(insert_single_column(`author`, `name`, authors)),
 		mysql.query(insert_single_column(`isbn`, `isbn`, isbns)),
 	])
 
 	const [{ insertId: book_id }] = await mysql.query(
-		`INSERT INTO book SET ?`, [{ title, subtitle }],
+		`INSERT INTO book SET ?`, [{ title, subtitle, source }],
 	)
 
 	const book_author_insert_query = sql`
