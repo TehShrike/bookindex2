@@ -11,7 +11,7 @@ import {
 import make_google_lookup from './google_books_isbn_lookup.js'
 import make_isbndb_lookup from './isbndb_isbn_lookup.js'
 
-import stocktake from './menu_items/stocktake/stocktake.js'
+import batch_stocktake from './menu_items/batch_stocktake/batch_stocktake.js'
 
 
 const isbndb_lookup = make_isbndb_lookup(isbndb_rest_key)
@@ -38,9 +38,9 @@ const main = async() => {
 	return menu({
 		title: `bookindex2`,
 		menu_items: [{
-			key: `s`,
-			name: `Stocktake`,
-			action: call_with_context(stocktake),
+			key: `b`,
+			name: `Batch stocktake`,
+			action: call_with_context(batch_stocktake),
 		}, {
 			key: `q`,
 			name: `Quit`,
