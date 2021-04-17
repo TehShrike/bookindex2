@@ -45,12 +45,20 @@ export default api_key => {
 			return null
 		}
 
-		const { data: response } = await get(`https://api2.isbndb.com/book/${ isbn }`, {
-			headers: {
-				Authorization: api_key,
-			},
-		})
+		try {
+			const { data: response } = await get(`https://api2.isbndb.com/book/${ isbn }`, {
+				headers: {
+					Authorization: api_key,
+				},
+			})
 
-		return translate_response_to_expected_shape(response)
+			return translate_response_to_expected_shape(response)
+		} catch (err) {
+			if (err.statusCode === 404) {
+				return null
+			}
+
+			throw err
+		}
 	})
 }
