@@ -1,5 +1,7 @@
 import readline from 'readline'
 
+import catchify from 'shared/catchify.js'
+
 export default async question => {
 	const rl = readline.createInterface({
 		input: process.stdin,
@@ -9,11 +11,16 @@ export default async question => {
 		// when rl.question is called in node 14?
 	})
 
-	try {
-		return await new Promise(resolve => {
-			rl.question(question + `\n> `, resolve)
-		})
-	} finally {
-		rl.close()
+	const [ err, line ] = await catchify(new Promise(resolve => {
+		rl.question(question + `\n> `, resolve)
+	}))
+
+	rl.close()
+	process.stdin.resume()
+
+	if (err) {
+		throw err
 	}
+
+	return line
 }

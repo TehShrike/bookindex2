@@ -5,6 +5,8 @@ import q from 'sql-concat'
 import parse_csv from 'shared/parse_csv.js'
 import make_look_up_book from 'shared/look_up_book.js'
 
+import { update_book_location } from 'shared/queries.js'
+
 const select_location_by_barcode = barcode => q.select(`location.location_id, location.barcode, location.name`)
 	.from(`location`)
 	.where(`location.barcode`, barcode)
@@ -51,14 +53,11 @@ export default async({ scanner_file_path, isbn_lookup, mysql }) => {
 				const book = scan.data
 				console.log(`Assigning location to`, book.title)
 
-				mysql.query(`
-					UPDATE book
-					SET location_id = ?
-					WHERE book_id = ?
-				`, [
-					current_location_id,
-					book.book_id,
-				])
+				await update_book_location({
+					mysql,
+					location_id: current_location_id,
+					book_id: book.book_id,
+				})
 			} else {
 				console.log(`Ignoring scan`, scan)
 			}

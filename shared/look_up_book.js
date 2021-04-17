@@ -34,7 +34,6 @@ const insert_single_column = (table, column, values) => `
 `
 
 const insert_book_from_api = async(mysql, book_from_api) => {
-	console.log(`trying to insert`, book_from_api)
 	const { title, subtitle, authors, isbns, source } = book_from_api
 
 	return await transaction(mysql, async() => {
