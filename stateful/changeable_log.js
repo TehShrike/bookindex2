@@ -2,8 +2,67 @@ import ansi from 'sisteransi'
 
 const count_newlines = str => Array.from(str.matchAll(/\n/g)).length
 
+// collect all characters that come in
+// if a newline comes in, fire an event with all characters in the buffer
+
+const start_line_emitter = (input, write, cb) => {
+	let buffer = ``
+
+	const listener = data => {
+		const key = data.toString()
+
+		write(key)
+
+		if (key === `\n`) {
+			try {
+				cb(buffer)
+			} finally {
+				buffer = ``
+			}
+		} else {
+			buffer += key
+		}
+	}
+
+	input.ref()
+	input.setRawMode(true)
+	input.on(`data`, listener)
+
+	return () => {
+		input.off(`data`, listener)
+		input.setRawMode(false)
+		input.unref()
+	}
+}
+
+const start_prompt = ({ input, log, write, prompt_listener_cb, initial_prompt = `> ` }) => {
+	let current_prompt_string = initial_prompt
+	let update_last_prompt = log(current_prompt_string)
+
+	const log_prompt = () => {
+		update_last_prompt = log(current_prompt_string)
+	}
+
+	const stop_line_listener = start_line_emitter(input, write, line => {
+		try {
+			prompt_listener_cb(line)
+		} finally {
+			log_prompt()
+		}
+	})
+
+	return {
+		update_prompt(new_prompt) {
+			current_prompt_string = new_prompt
+			update_last_prompt(new_prompt)
+		},
+		stop() {
+			stop_line_listener()
+		},
+	}
+}
+
 export default (input = process.stdin, output = process.stdout) => {
-	console.log(`process.stdin.isPaused()`, process.stdin.isPaused())
 	let lines_written = 0
 
 	const write = str => {
@@ -16,12 +75,7 @@ export default (input = process.stdin, output = process.stdout) => {
 		output.write(`\n`)
 	}
 
-	const input_listener = data => {
-		lines_written += count_newlines(data.toString())
-	}
-	input.on(`data`, input_listener)
-
-	const log_function = (string, updater) => {
+	const log = (string, updater) => {
 		const log_line = lines_written
 		write(string)
 		write_newline()
@@ -40,10 +94,18 @@ export default (input = process.stdin, output = process.stdout) => {
 		}
 	}
 
-	log_function.done = () => {
-		input.off(`data`, input_listener)
-		input.unref()
+	return {
+		log,
+		start_prompt(prompt_listener) {
+			return start_prompt({
+				input,
+				log,
+				write,
+				prompt_listener_cb: line => {
+					lines_written++
+					prompt_listener(line)
+				},
+			})
+		},
 	}
-
-	return log_function
 }
