@@ -8,8 +8,9 @@ import {
 	scanner_file_path,
 } from '/Users/josh/.bookindex2-config.mjs'
 
-import make_google_lookup from './google_books_isbn_lookup.js'
-import make_isbndb_lookup from './isbndb_isbn_lookup.js'
+import make_google_lookup from './stateful/google_books_isbn_lookup.js'
+import make_isbndb_lookup from './stateful/isbndb_isbn_lookup.js'
+import make_log from './stateful/changeable_log.js'
 
 import batch_stocktake from './menu_items/batch_stocktake/batch_stocktake.js'
 import add_location from './menu_items/add_location/add_location.js'
@@ -33,6 +34,7 @@ const main = async() => {
 		mysql: await mysql2.createConnection(mysql_connection_options),
 		isbn_lookup,
 		scanner_file_path,
+		log: make_log(),
 	}
 
 	const call_with_context = fn => () => fn(context)
