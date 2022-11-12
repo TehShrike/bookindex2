@@ -6,7 +6,7 @@ import {
 	isbndb_rest_key,
 	mysql as mysql_connection_options,
 	scanner_file_path,
-} from '/Users/josh/.bookindex2-config.mjs'
+} from '/Users/joshduff/.bookindex2-config.mjs'
 
 import make_google_lookup from './stateful/google_books_isbn_lookup.js'
 import make_isbndb_lookup from './stateful/isbndb_isbn_lookup.js'

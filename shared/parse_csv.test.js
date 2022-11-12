@@ -5,7 +5,7 @@ import parse_csv from './parse_csv.js'
 const test = suite(`parse_csv`)
 
 test(`basic test`, () => {
-	const csv = `04/06/2000,08:54:13,0B,JD0001
+	const csv = `04/06/2000,08:54:13,0B,JDD0001
 04/06/2000,08:54:14,0B,9781439156810\r
 04/06/2000,08:54:17,0B,9780517548233\r
 04/06/2000,08:54:19,0B,9780875525501\r
@@ -30,7 +30,7 @@ test(`basic test`, () => {
 04/06/2000,08:57:07,01,X002AE2VAR
 `
 	const expected_output = [
-		{ barcode: `JD0001`, type: `location` },
+		{ barcode: `JDD0001`, type: `location` },
 		{ barcode: `9781439156810`, type: `isbn` },
 		{ barcode: `9780517548233`, type: `isbn` },
 		{ barcode: `9780875525501`, type: `isbn` },
