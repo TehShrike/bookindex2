@@ -31,7 +31,7 @@ const main = async() => {
 
 	await delay(500)
 
-	stop()
+	const everything_seen = stop()
 	clearTimeout(timeout)
 
 	seen_lines.forEach(({ added, line }) => {
@@ -39,6 +39,8 @@ const main = async() => {
 	})
 
 	console.log(seen_lines)
+
+	console.log(`everything seen by the listener:`, everything_seen)
 }
 
 main()

@@ -7,9 +7,14 @@ const count_newlines = str => Array.from(str.matchAll(/\n/g)).length
 
 const start_line_emitter = (input, write, cb) => {
 	let buffer = ``
+	let everything_seen = ``
 
-	const listener = data => {
-		const key = data.toString()
+	const listener = key => {
+		if (key === `\u0003`) {
+			process.exit()
+		}
+
+		everything_seen += key
 
 		write(key)
 
@@ -26,12 +31,14 @@ const start_line_emitter = (input, write, cb) => {
 
 	input.ref()
 	input.setRawMode(true)
+	input.setEncoding(`utf8`)
 	input.on(`data`, listener)
 
 	return () => {
 		input.off(`data`, listener)
 		input.setRawMode(false)
 		input.unref()
+		return everything_seen
 	}
 }
 
@@ -57,7 +64,7 @@ const start_prompt = ({ input, log, write, prompt_listener_cb, initial_prompt = 
 			update_last_prompt(new_prompt)
 		},
 		stop() {
-			stop_line_listener()
+			return stop_line_listener()
 		},
 	}
 }
