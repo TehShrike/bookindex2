@@ -17,5 +17,7 @@ log(`This is a log from the outside world`)
 setTimeout(() => {
 	log(`all done`)
 	stop()
+	console.log(`This is a regular console`)
+	console.log(`💪 hehheh`)
 	process.exit(0)
 }, 10000)
