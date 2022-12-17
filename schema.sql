@@ -13,6 +13,8 @@ MySQL - 8.0.20 : Database - bookindex2
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 CREATE DATABASE /*!32312 IF NOT EXISTS*/`bookindex2` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
+USE bookindex2;
+
 /*Table structure for table `author` */
 
 CREATE TABLE `author` (
@@ -20,6 +22,25 @@ CREATE TABLE `author` (
   `name` varchar(200) NOT NULL,
   PRIMARY KEY (`author_id`),
   UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `isbn` */
+
+CREATE TABLE `isbn` (
+  `isbn_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `isbn` char(13) NOT NULL,
+  PRIMARY KEY (`isbn_id`),
+  UNIQUE KEY `isbn` (`isbn`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+/*Table structure for table `location` */
+
+CREATE TABLE `location` (
+  `location_id` int unsigned NOT NULL AUTO_INCREMENT,
+  `barcode` varchar(50) NOT NULL,
+  `name` varchar(200) NOT NULL,
+  PRIMARY KEY (`location_id`),
+  UNIQUE KEY `barcode` (`barcode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*Table structure for table `book` */
@@ -59,25 +80,6 @@ CREATE TABLE `book_isbn` (
   KEY `isbn` (`isbn_id`),
   CONSTRAINT `book_isbn_book` FOREIGN KEY (`book_id`) REFERENCES `book` (`book_id`),
   CONSTRAINT `book_isbn_isbn` FOREIGN KEY (`isbn_id`) REFERENCES `isbn` (`isbn_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Table structure for table `isbn` */
-
-CREATE TABLE `isbn` (
-  `isbn_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `isbn` char(13) NOT NULL,
-  PRIMARY KEY (`isbn_id`),
-  UNIQUE KEY `isbn` (`isbn`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-/*Table structure for table `location` */
-
-CREATE TABLE `location` (
-  `location_id` int unsigned NOT NULL AUTO_INCREMENT,
-  `barcode` varchar(50) NOT NULL,
-  `name` varchar(200) NOT NULL,
-  PRIMARY KEY (`location_id`),
-  UNIQUE KEY `barcode` (`barcode`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
