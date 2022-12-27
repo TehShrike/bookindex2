@@ -12,13 +12,13 @@ import ansi from 'sisteransi'
 const ctrl_c = `\u0003`
 const backspace_value = 127
 
-export default ({ line_prompt = `> `, input = process.stdin, output = process.stdout, prompt_callback }) => {
+export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }) => {
 	let lines_written = 0
 	let current_line_so_far = ``
 
 	const write_newline = () => {
 		lines_written++
-		output.write(`\n${line_prompt}`)
+		output.write(`\n${line_prompt}${current_line_so_far}`)
 	}
 
 	const reset_line = () => {
@@ -64,8 +64,8 @@ export default ({ line_prompt = `> `, input = process.stdin, output = process.st
 				process.exit()
 			} else if (char_code === 13 || character === `\n`) {
 				const line = current_line_so_far
-				const update = log(line)
 				current_line_so_far = ``
+				const update = log(line)
 				prompt_callback(line, update)
 			} else {
 				output.write(character)

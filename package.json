@@ -23,6 +23,7 @@
     "cli-menu": "^1.0.0",
     "httpie": "^1.1.2",
     "mysql2": "^2.2.5",
+    "p-defer": "^4.0.0",
     "p-throttle": "^4.1.1",
     "sisteransi": "^1.0.5",
     "sql-concat": "^3.0.0",

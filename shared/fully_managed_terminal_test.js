@@ -1,6 +1,5 @@
 import make_fully_managed_terminal from './fully_managed_terminal.js'
 
-
 const { stop, log } = make_fully_managed_terminal({
 	prompt_callback(str, update) {
 		if (str === `quit`) {
@@ -13,6 +12,10 @@ const { stop, log } = make_fully_managed_terminal({
 })
 
 log(`This is a log from the outside world`)
+
+setTimeout(() => {
+	log(`a log in the middle of you doing stuff`)
+}, 1000)
 
 setTimeout(() => {
 	log(`all done`)
