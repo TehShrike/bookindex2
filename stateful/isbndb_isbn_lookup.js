@@ -1,7 +1,7 @@
 import p_throttle from 'p-throttle'
 import { get } from 'httpie'
 
-import unreverse_names from './shared/unreverse_names.js'
+import unreverse_names from 'shared/unreverse_names.js'
 
 const translate_response_to_expected_shape = response => {
 	if (!response.book) {
