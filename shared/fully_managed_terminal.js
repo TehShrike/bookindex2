@@ -1,4 +1,5 @@
 import { Writable } from 'node:stream'
+import { Buffer } from 'node:buffer'
 
 // collect all characters that come in
 // if a newline comes in, fire an event with all characters in the buffer
@@ -11,6 +12,9 @@ import ansi from 'sisteransi'
 
 const ctrl_c = `\u0003`
 const backspace_value = 127
+
+const up_arrow = Buffer.from([ 27, 91, 65 ])
+const down_arrow = Buffer.from([ 27, 91, 66 ])
 
 export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }) => {
 	let lines_written = 0
@@ -53,8 +57,8 @@ export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, ou
 
 			const char_code = character.charCodeAt(0)
 
-			// output.write(`got "${char_code}"\n`)
-			if (char_code === backspace_value) {
+			// output.write(`buffer values: "${Array.from(chunk.values()).join(`, `)}"\n`)
+			if (char_code === backspace_value || down_arrow.equals(chunk) || up_arrow.equals(chunk)) {
 				if (current_line_so_far.length > 0) {
 					current_line_so_far = current_line_so_far.slice(0, -1)
 					output.write(ansi.cursor.move(-1, 0))
