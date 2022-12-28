@@ -1,14 +1,17 @@
-Right now just for myself, but could be used by other people without too much work.
+I'm making this for myself, but if you want to use it to keep track of your library, you totally can.
 
 Work that could be done to make this more generally usable for anyone:
 
-- in `index.js`, load `.bookindex2-config.mjs` from the user directory instead of a hardcoded directory
 - allow using only one or the other of Google Books or isbndb, instead of assuming both
-- configure different location barcode prefixes besides `JD`
+- configure different location barcode prefixes besides `JDD`
+
+## Set up your database
+
+Install MySQL 8 somewhere and manually run the queries in [schema.sql](./schema.sql).
 
 ## Where are the api keys around the internet
 
-They go in the `.bookindex2-config.mjs` file like so
+They go in the `.bookindex2-config.mjs` file (in your user's home directory) like so
 
 ```js
 export const google_cloud_api_key = ''
