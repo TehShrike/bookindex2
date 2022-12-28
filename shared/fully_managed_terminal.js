@@ -85,12 +85,15 @@ export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, ou
 	input.ref()
 	input.setRawMode(true)
 	input.setEncoding(`utf8`)
+	input.unpipe(output)
 	input.pipe(output_intercepter)
 
 	return {
 		log,
 		stop: () => {
 			reset_line()
+			input.unpipe(output_intercepter)
+			output_intercepter.destroy()
 			input.setRawMode(false)
 			input.unref()
 			input.pipe(output)
