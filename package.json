@@ -28,7 +28,8 @@
     "sisteransi": "^1.0.5",
     "sql-concat": "^3.0.0",
     "sql-tagged-template-literal": "^1.1.0",
-    "symlink-cli": "^1.0.0"
+    "symlink-cli": "^1.0.0",
+    "untildify": "^4.0.0"
   },
   "devDependencies": {
     "uvu": "^0.5.1"

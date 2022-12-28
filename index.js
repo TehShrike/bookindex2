@@ -1,12 +1,6 @@
 import mysql2 from 'mysql2/promise'
 import menu from 'cli-menu'
-
-import {
-	google_cloud_api_key,
-	isbndb_rest_key,
-	mysql as mysql_connection_options,
-	scanner_file_path,
-} from '/Users/joshduff/.bookindex2-config.mjs'
+import untildify from 'untildify'
 
 import make_google_lookup from './stateful/google_books_isbn_lookup.js'
 import make_isbndb_lookup from './stateful/isbndb_isbn_lookup.js'
@@ -15,20 +9,32 @@ import batch_stocktake from './menu_items/batch_stocktake/batch_stocktake.js'
 import add_location from './menu_items/add_location/add_location.js'
 import live_stocktake from './menu_items/live_stocktake/live_stocktake.js'
 
+const make_isbn_lookup = async({ google_cloud_api_key, isbndb_rest_key }) => {
+	const isbndb_lookup = make_isbndb_lookup(isbndb_rest_key)
+	const google_lookup = make_google_lookup({ api_key: google_cloud_api_key })
 
-const isbndb_lookup = make_isbndb_lookup(isbndb_rest_key)
-const google_lookup = make_google_lookup({ api_key: google_cloud_api_key })
-const isbn_lookup = async isbn => {
-	const google_result = await google_lookup(isbn)
+	return async isbn => {
+		const google_result = await google_lookup(isbn)
 
-	if (google_result) {
-		return google_result
+		if (google_result) {
+			return google_result
+		}
+
+		return await isbndb_lookup(isbn)
 	}
-
-	return await isbndb_lookup(isbn)
 }
 
+
 const main = async() => {
+	const {
+		google_cloud_api_key,
+		isbndb_rest_key,
+		mysql: mysql_connection_options,
+		scanner_file_path,
+	} = await import(untildify(`~/.bookindex2-config.mjs`))
+
+	const isbn_lookup = await make_isbn_lookup({ google_cloud_api_key, isbndb_rest_key })
+
 	const context = {
 		mysql: await mysql2.createConnection(mysql_connection_options),
 		isbn_lookup,
