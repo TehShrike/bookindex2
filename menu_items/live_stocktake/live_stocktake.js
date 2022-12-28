@@ -1,24 +1,10 @@
 import sql from 'sql-tagged-template-literal'
 
 import get_barcode_type from 'shared/get_barcode_type.js'
-import readline from 'shared/readline.js'
 import make_look_up_book from 'shared/look_up_book.js'
 import { update_book_location } from 'shared/queries.js'
-
-const possible_states = {
-	no_location: `no_location`,
-	at_location: `at_location`,
-}
-
-const initial_state = Object.freeze({
-	book_barcodes: [],
-	current_location: null,
-	current_state: possible_states.no_location,
-})
-
-const back_state = Object.freeze({
-	current_state: null,
-})
+import dumb_terminal_state_machine from 'shared/dumb_terminal_state_machine.js'
+import * as message from 'shared/message_updates.js'
 
 const look_up_location = async(mysql, barcode) => {
 	const [ [ book ] ] = await mysql.query(sql`
@@ -30,91 +16,80 @@ const look_up_location = async(mysql, barcode) => {
 	return book || null
 }
 
-const make_reducers = ({ mysql, look_up_book }) => {
-	const apply_location_barcode = async location_barcode => {
+export default async({ isbn_lookup, mysql }) => {
+	const look_up_book = make_look_up_book({ isbn_lookup, mysql })
+
+	let current_location = null
+
+	const apply_location_barcode = async({ log, update, location_barcode }) => {
 		const location = await look_up_location(mysql, location_barcode)
 
-		if (!location) {
-			console.log(`No location found in the database for barcode`, location_barcode)
+		if (location) {
+			log(`Scanning books at location "${location.name}"...`)
+			update(message.success(message.location(location.name)))
+
+			current_location = location
+
+			return AT_LOCATION
+		} else {
+			update(message.failure(location_barcode))
+			log(`No location found in the database for barcode`, location_barcode)
 			// TODO: ask the user to give the location a name
-
-			return initial_state
-		}
-
-		console.log(`Scanning books at location`, location.name)
-
-		return {
-			// book_barcodes: [],
-			current_location: location,
-			current_state: possible_states.at_location,
+			return NO_LOCATION
 		}
 	}
 
-	return {
-		no_location: async() => {
-			const barcode = await readline(`Scan a location...`)
-
+	const NO_LOCATION = {
+		prompt: `Scan a location:`,
+		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {
-				return back_state
+				return
 			}
-
 			const barcode_type = get_barcode_type(barcode)
 
 			if (barcode_type !== `location`) {
-				return initial_state
+				return NO_LOCATION
 			}
 
-			return await apply_location_barcode(barcode)
+			return await apply_location_barcode({ log, update, location_barcode: barcode })
 		},
-		at_location: async state => {
-			const barcode = await readline(`Scan a location or book...`)
+	}
 
+	const AT_LOCATION = {
+		prompt: `Scan a location or book...`,
+		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {
-				return back_state
+				return
 			}
-
 			const barcode_type = get_barcode_type(barcode)
 
 			if (barcode_type === `location`) {
-				return apply_location_barcode(barcode)
+				return apply_location_barcode({ log, update, location_barcode: barcode })
 			} else if (barcode_type === `isbn`) {
 				const book = await look_up_book(barcode)
 
 				if (!book) {
-					console.log(`No book found for ISBN`, barcode)
-					return state
+					update(message.failure(`No book found for ISBN "${barcode}"`))
+					return AT_LOCATION
 				}
 
-				console.log(`Scanned`, book.title)
+				update(book.title)
 
 				await update_book_location({
 					mysql,
-					location_id: state.current_location.location_id,
+					location_id: current_location.location_id,
 					book_id: book.book_id,
 				})
 
-				return state
+				update(message.success(message.book(book.title)))
+
+				return AT_LOCATION
 			} else {
-				console.log(`Unrecognized barcode:`, barcode)
-				return state
+				update(message.failure(`Unrecognized barcode "${barcode}"`))
+				return AT_LOCATION
 			}
 		},
 	}
-}
 
-export default async({ isbn_lookup, mysql }) => {
-	const look_up_book = make_look_up_book({ isbn_lookup, mysql })
-
-	const reducers = make_reducers({ mysql, look_up_book })
-
-	let state = initial_state
-
-	while (state?.current_state) {
-		const reducer = reducers[state.current_state]
-		if (!reducer) {
-			console.log(`No reducer for state`, state)
-			return
-		}
-		state = await reducer(state)
-	}
+	await dumb_terminal_state_machine(NO_LOCATION)
 }
