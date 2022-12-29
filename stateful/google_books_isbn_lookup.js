@@ -8,8 +8,8 @@ const isbn_identifier_types = new Set([
 
 export default ({ api_key }) => {
 	const throttle = p_throttle({
-		limit: 100,
-		interval: 60000,
+		limit: 95,
+		interval: 55_000,
 		strict: true,
 	})
 
