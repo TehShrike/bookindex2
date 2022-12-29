@@ -7,7 +7,8 @@
   "scripts": {
     "test": "uvu",
     "create_symlinks": "symlink shared node_modules/shared",
-    "postinstall": "npm run create_symlinks"
+    "postinstall": "npm run create_symlinks",
+    "backup": "mysqldump --defaults-extra-file=.mysql.cnf --set-gtid-purged=OFF --no-tablespaces --single-transaction bookindex2 > ./backup.sql"
   },
   "repository": {
     "type": "git",
