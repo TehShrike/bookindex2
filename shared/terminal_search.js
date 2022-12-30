@@ -22,11 +22,13 @@ export default ({ search_function, selection_callback }) => {
 			const responses = await latest_type_promise
 			const blank_lines = Math.max(0, results_update_fns.length - responses.length)
 			top_update_fn(wrap_with_style(styles.yellow, wrap_with_style(styles.bold, responses.length.toString()) + ` results`))
+
+			const relevant_responses = responses.slice(0, NUMBER_OF_LINES)
 			results_update_fns.forEach((update, index) => {
 				const response_number = index - blank_lines
 				if (response_number >= 0) {
-					const response_index = responses.length - response_number - 1
-					const { display } = responses[response_index]
+					const response_index = relevant_responses.length - response_number - 1
+					const { display } = relevant_responses[response_index]
 					update(display)
 				} else {
 					update(``)
