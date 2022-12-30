@@ -2,3 +2,4 @@ node_modules
 .mysql.cnf
 backup.sql
 .eslintcache
+BARCODES.TXT
