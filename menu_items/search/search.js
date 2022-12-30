@@ -37,6 +37,7 @@ export default async({ mysql }) => {
 					.leftJoin(`author USING(author_id)`)
 					.whereLike(`book.title`, `%${line_so_far}%`)
 					.orWhereLike(`book.subtitle`, `%${line_so_far}%`)
+					.orWhereLike(`author.name`, `%${line_so_far}%`)
 					.groupBy(`book.book_id`)
 					.orderBy(`title LIKE '%${escape_string(line_so_far)}%' DESC, title ASC, subtitle ASC`)
 					.build(),
@@ -59,7 +60,7 @@ export default async({ mysql }) => {
 				const written_by = response.author_names.length === 0
 					? `🤐`
 					: response.author_names.map(author_display).join(` and `)
-				console.log(book_display(response) + ` was written by ` + written_by)
+				console.log(message.book(wrap_with_style(styles.cyan, response.title)) + ` was written by ` + written_by)
 			}
 			deferred.resolve()
 		},
