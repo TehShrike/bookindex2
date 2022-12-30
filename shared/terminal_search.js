@@ -10,7 +10,7 @@ export default ({ search_function, selection_callback }) => {
 	let latest_type_promise = null
 
 	const { log, stop } = make_fully_managed_terminal({
-		line_prompt: `search>`,
+		line_prompt: `search> `,
 		async type_callback(line_so_far) {
 			if (line_so_far.length === 0) {
 				top_update_fn(wrap_with_style(styles.yellow, wrap_with_style(styles.bold, `0`) + ` results`))
