@@ -15,6 +15,7 @@ export default ({ search_function, selection_callback }) => {
 			if (line_so_far.length === 0) {
 				top_update_fn(wrap_with_style(styles.yellow, wrap_with_style(styles.bold, `0`) + ` results`))
 				results_update_fns.forEach(update => update(``))
+				latest_type_promise = Promise.resolve(null)
 				return
 			}
 
@@ -37,7 +38,12 @@ export default ({ search_function, selection_callback }) => {
 		},
 		async prompt_callback() {
 			const responses = await latest_type_promise
-			selection_callback(responses[0])
+
+			if (responses === null || responses.length === 0) {
+				selection_callback(null)
+			} else {
+				selection_callback(responses[0])
+			}
 		},
 	})
 
