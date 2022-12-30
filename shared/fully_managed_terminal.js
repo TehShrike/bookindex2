@@ -18,7 +18,7 @@ const down_arrow = Buffer.from([ 27, 91, 66 ])
 const right_arrow = Buffer.from([ 27, 91, 67 ])
 const left_arrow = Buffer.from([ 27, 91, 68 ])
 
-export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }) => {
+export default ({ type_callback = null, prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }) => {
 	let lines_written = 0
 	let probable_cursor_position = 0
 	let current_line_so_far = ``
@@ -96,6 +96,7 @@ export default ({ prompt_callback, line_prompt = `> `, input = process.stdin, ou
 				} else {
 					current_line_so_far += character
 					probable_cursor_position += character.length
+					type_callback && type_callback(current_line_so_far)
 				}
 			}
 

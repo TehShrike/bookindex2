@@ -8,6 +8,7 @@ import make_isbndb_lookup from './stateful/isbndb_isbn_lookup.js'
 import batch_stocktake from './menu_items/batch_stocktake/batch_stocktake.js'
 import add_location from './menu_items/add_location/add_location.js'
 import live_stocktake from './menu_items/live_stocktake/live_stocktake.js'
+import search from './menu_items/search/search.js'
 
 const make_isbn_lookup = async({ google_cloud_api_key, isbndb_rest_key }) => {
 	const isbndb_lookup = make_isbndb_lookup(isbndb_rest_key)
@@ -61,6 +62,10 @@ const main = async() => {
 			key: `q`,
 			name: `Quit`,
 			action: ({ back }) => back(),
+		}, {
+			key: `e`,
+			name: `Search`,
+			action: call_with_context(search),
 		}],
 	}).then(() => context.mysql.end())
 }
