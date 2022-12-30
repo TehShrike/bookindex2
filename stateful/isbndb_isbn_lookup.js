@@ -27,7 +27,7 @@ const translate_response_to_expected_shape = response => {
 	return {
 		title: title_long,
 		subtitle: null,
-		authors: authors.map(unreverse_names),
+		authors: Array.isArray(authors) ? authors.map(unreverse_names) : null,
 		isbns,
 		source: `isbndb`,
 	}
