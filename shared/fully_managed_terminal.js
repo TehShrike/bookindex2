@@ -77,6 +77,7 @@ export default ({ type_callback = null, prompt_callback, line_prompt = `> `, inp
 					current_line_so_far = current_line_so_far.slice(0, -1)
 					output.write(ansi.cursor.move(-1, 0))
 					output.write(` \b`)
+					type_callback && type_callback(current_line_so_far)
 				}
 			} else if (character === ctrl_c) {
 				process.exit()
