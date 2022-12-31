@@ -58,7 +58,7 @@ export default async({ mysql }) => {
 			stop()
 			if (response) {
 				const written_by = response.author_names.length === 0
-					? `🤐`
+					? `🤐 author unknown`
 					: response.author_names.map(author_display).join(` and `)
 				console.log(message.book(wrap_with_style(styles.cyan, response.title)) + ` was written by ` + written_by)
 			}
