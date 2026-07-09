@@ -1,4 +1,4 @@
-import make_fully_managed_terminal from './fully_managed_terminal.js'
+import make_fully_managed_terminal from './fully_managed_terminal.ts'
 
 const { stop, log } = make_fully_managed_terminal({
 	prompt_callback(str, update) {

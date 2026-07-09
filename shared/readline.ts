@@ -1,8 +1,8 @@
 import readline from 'readline'
 
-import catchify from 'shared/catchify.js'
+import catchify from '#shared/catchify.ts'
 
-export default async question => {
+export default async (question: string): Promise<string> => {
 	const rl = readline.createInterface({
 		input: process.stdin,
 		output: process.stdout,
@@ -11,7 +11,7 @@ export default async question => {
 		// when rl.question is called in node 14?
 	})
 
-	const [ err, line ] = await catchify(new Promise(resolve => {
+	const [ err, line ] = await catchify(new Promise<string>(resolve => {
 		rl.question(question + `\n> `, resolve)
 	}))
 
@@ -22,5 +22,5 @@ export default async question => {
 		throw err
 	}
 
-	return line
+	return line!
 }

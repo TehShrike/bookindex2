@@ -2,7 +2,7 @@
 // but without adding quotation marks to the result
 
 const CHARS_GLOBAL_REGEXP = /[\0\b\t\n\r\x1a\"\'\\]/g // eslint-disable-line no-control-regex
-const CHARS_ESCAPE_MAP = {
+const CHARS_ESCAPE_MAP: Record<string, string> = {
 	'\0': `\\0`,
 	'\b': `\\b`,
 	'\t': `\\t`,
@@ -14,7 +14,7 @@ const CHARS_ESCAPE_MAP = {
 	'\\': `\\\\`,
 }
 
-export default val => {
+export default (val: string): string => {
 	let chunkIndex = 0
 	let escapedVal = ``
 	let match

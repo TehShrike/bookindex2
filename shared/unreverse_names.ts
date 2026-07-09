@@ -1,4 +1,4 @@
-export default name => {
+export default (name: string): string => {
 	const match = name.match(/^([^,]+),\s*(.+)$/)
 
 	if (!match) {

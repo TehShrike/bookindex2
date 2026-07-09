@@ -3,11 +3,16 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Where did I put that book",
-  "main": "index.js",
+  "main": "index.ts",
+  "engines": {
+    "node": ">=24"
+  },
+  "imports": {
+    "#shared/*": "./shared/*"
+  },
   "scripts": {
-    "test": "uvu",
-    "create_symlinks": "symlink shared node_modules/shared",
-    "postinstall": "npm run create_symlinks",
+    "test": "node --test '**/*.test.ts'",
+    "test:types": "tsc --noEmit",
     "backup": "mysqldump --defaults-extra-file=.mysql.cnf --set-gtid-purged=OFF --no-tablespaces --single-transaction bookindex2 > ./backup.sql"
   },
   "repository": {
@@ -29,10 +34,10 @@
     "sisteransi": "^1.0.5",
     "sql-concat": "^3.0.0",
     "sql-tagged-template-literal": "^1.1.0",
-    "symlink-cli": "^1.0.0",
     "untildify": "^4.0.0"
   },
   "devDependencies": {
-    "uvu": "^0.5.1"
+    "@types/node": "^26.1.1",
+    "typescript": "^7.0.2"
   }
 }
