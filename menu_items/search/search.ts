@@ -8,14 +8,12 @@ import * as message from '#shared/message_updates.ts'
 
 import type { RowDataPacket } from 'mysql2/promise'
 import type { TerminalStyle } from '#shared/terminal_styles.ts'
+import type { AuthorRow, BookRow, LocationRow } from '#shared/schema.ts'
 import type { Context } from '../../index.ts'
 
-type BookSearchRow = {
-	book_id: number,
-	title: string,
-	subtitle: string | null,
-	location_name: string,
-	author_names: string[],
+type BookSearchRow = Omit<BookRow, 'location_id' | 'source'> & {
+	location_name: LocationRow[`name`],
+	author_names: AuthorRow[`name`][],
 }
 
 type BookSearchResult = Omit<BookSearchRow, 'location_name'> & {

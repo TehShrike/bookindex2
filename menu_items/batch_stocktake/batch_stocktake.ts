@@ -10,19 +10,14 @@ import { update_book_location } from '#shared/queries.ts'
 import type { RowDataPacket } from 'mysql2/promise'
 import type { BarcodeType } from '#shared/get_barcode_type.ts'
 import type { ParsedBarcode } from '#shared/parse_csv.ts'
-import type { BookRow } from '#shared/look_up_book.ts'
+import type { LookedUpBook } from '#shared/look_up_book.ts'
+import type { LocationRow } from '#shared/schema.ts'
 import type { Context } from '../../index.ts'
-
-type LocationRow = {
-	location_id: number,
-	barcode: string,
-	name: string,
-}
 
 type ScanWithData = ParsedBarcode & (
 	{ data?: undefined }
 	| { type: `location`, data: LocationRow | null }
-	| { type: `isbn`, data: BookRow | null }
+	| { type: `isbn`, data: LookedUpBook | null }
 )
 
 const select_location_by_barcode = (barcode: string) => q.select(`location.location_id, location.barcode, location.name`)

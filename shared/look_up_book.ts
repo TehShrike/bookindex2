@@ -4,13 +4,9 @@ import sql from 'sql-tagged-template-literal'
 import transaction from '#shared/transaction.ts'
 
 import type { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
+import type { BookRow } from '#shared/schema.ts'
 
-export type BookRow = {
-	book_id: number,
-	title: string,
-	subtitle: string | null,
-	location_id: number | null,
-}
+export type LookedUpBook = Omit<BookRow, 'source'>
 
 export type BookFromApi = {
 	title: string,
@@ -29,8 +25,8 @@ const select_book_by_isbn = (isbn: string) => q.select(`book.book_id, book.title
 	.where(`isbn.isbn`, isbn)
 	.build()
 
-export default ({ isbn_lookup, mysql }: { isbn_lookup: IsbnLookup, mysql: Connection }) => async (isbn: string): Promise<BookRow | null> => {
-	const [ [ book_in_db ] ] = await mysql.query<(BookRow & RowDataPacket)[]>(select_book_by_isbn(isbn))
+export default ({ isbn_lookup, mysql }: { isbn_lookup: IsbnLookup, mysql: Connection }) => async (isbn: string): Promise<LookedUpBook | null> => {
+	const [ [ book_in_db ] ] = await mysql.query<(LookedUpBook & RowDataPacket)[]>(select_book_by_isbn(isbn))
 
 	if (book_in_db) {
 		return book_in_db
@@ -52,7 +48,7 @@ const insert_single_column = (table: string, column: string, values: string[]) =
 		${ values.map(value => sql`(${ value })`).join(`, `) }
 `
 
-const insert_book_from_api = async (mysql: Connection, book_from_api: BookFromApi): Promise<BookRow> => {
+const insert_book_from_api = async (mysql: Connection, book_from_api: BookFromApi): Promise<LookedUpBook> => {
 	const { title, subtitle, authors, isbns, source } = book_from_api
 
 	return await transaction(mysql, async () => {

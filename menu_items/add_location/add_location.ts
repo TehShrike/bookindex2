@@ -6,13 +6,8 @@ import { success, failure, location } from '#shared/message_updates.ts'
 
 import type { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 import type { TerminalState } from '#shared/dumb_terminal_state_machine.ts'
+import type { LocationRow } from '#shared/schema.ts'
 import type { Context } from '../../index.ts'
-
-type LocationRow = {
-	location_id: number,
-	barcode: string,
-	name: string,
-}
 
 const look_up_location = async(mysql: Connection, barcode: string): Promise<LocationRow | null> => {
 	const [ [ book ] ] = await mysql.query<(LocationRow & RowDataPacket)[]>(sql`
