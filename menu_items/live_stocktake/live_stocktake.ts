@@ -1,13 +1,19 @@
 import sql from 'sql-tagged-template-literal'
 
-import get_barcode_type from 'shared/get_barcode_type.js'
-import make_look_up_book from 'shared/look_up_book.js'
-import { update_book_location } from 'shared/queries.js'
-import dumb_terminal_state_machine from 'shared/dumb_terminal_state_machine.js'
-import * as message from 'shared/message_updates.js'
+import get_barcode_type from '#shared/get_barcode_type.ts'
+import make_look_up_book from '#shared/look_up_book.ts'
+import { update_book_location } from '#shared/queries.ts'
+import dumb_terminal_state_machine from '#shared/dumb_terminal_state_machine.ts'
+import * as message from '#shared/message_updates.ts'
 
-const look_up_location = async(mysql, barcode) => {
-	const [ [ book ] ] = await mysql.query(sql`
+import type { Connection, RowDataPacket } from 'mysql2/promise'
+import type { Updater, UpdateFn } from '#shared/fully_managed_terminal.ts'
+import type { TerminalState } from '#shared/dumb_terminal_state_machine.ts'
+import type { LocationRow } from '#shared/schema.ts'
+import type { Context } from '../../index.ts'
+
+const look_up_location = async(mysql: Connection, barcode: string): Promise<LocationRow | null> => {
+	const [ [ book ] ] = await mysql.query<(LocationRow & RowDataPacket)[]>(sql`
 		SELECT location_id, barcode, name
 		FROM location
 		WHERE barcode = ${ barcode }`,
@@ -16,12 +22,16 @@ const look_up_location = async(mysql, barcode) => {
 	return book || null
 }
 
-export default async({ isbn_lookup, mysql }) => {
+export default async({ isbn_lookup, mysql }: Context) => {
 	const look_up_book = make_look_up_book({ isbn_lookup, mysql })
 
-	let current_location = null
+	let current_location: LocationRow | null = null
 
-	const apply_location_barcode = async({ log, update, location_barcode }) => {
+	const apply_location_barcode = async({ log, update, location_barcode }: {
+		log(message: string, updater?: Updater | string): UpdateFn,
+		update: UpdateFn,
+		location_barcode: string,
+	}): Promise<TerminalState> => {
 		const location = await look_up_location(mysql, location_barcode)
 
 		if (location) {
@@ -39,7 +49,7 @@ export default async({ isbn_lookup, mysql }) => {
 		}
 	}
 
-	const NO_LOCATION = {
+	const NO_LOCATION: TerminalState = {
 		prompt: `Scan a location:`,
 		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {
@@ -55,7 +65,7 @@ export default async({ isbn_lookup, mysql }) => {
 		},
 	}
 
-	const AT_LOCATION = {
+	const AT_LOCATION: TerminalState = {
 		prompt: `Scan a location or book...`,
 		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {
@@ -77,7 +87,7 @@ export default async({ isbn_lookup, mysql }) => {
 
 				await update_book_location({
 					mysql,
-					location_id: current_location.location_id,
+					location_id: current_location!.location_id,
 					book_id: book.book_id,
 				})
 

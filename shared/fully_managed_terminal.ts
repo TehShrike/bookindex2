@@ -18,7 +18,30 @@ const down_arrow = Buffer.from([ 27, 91, 66 ])
 const right_arrow = Buffer.from([ 27, 91, 67 ])
 const left_arrow = Buffer.from([ 27, 91, 68 ])
 
-export default ({ type_callback = null, prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }) => {
+export type UpdateFn = (update_value: string) => void
+
+export type Updater = (update_value: string) => string
+
+export type LogFn = (string: string, updater?: Updater) => UpdateFn
+
+export type PromptCallback = (line: string, update: UpdateFn) => void
+
+export type TypeCallback = (line_so_far: string) => void
+
+export type TerminalOptions = {
+	type_callback?: TypeCallback | null,
+	prompt_callback: PromptCallback,
+	line_prompt?: string,
+	input?: NodeJS.ReadStream,
+	output?: NodeJS.WriteStream,
+}
+
+export type FullyManagedTerminal = {
+	log: LogFn,
+	stop: () => void,
+}
+
+export default ({ type_callback = null, prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }: TerminalOptions): FullyManagedTerminal => {
 	let lines_written = 0
 	let probable_cursor_position = 0
 	let current_line_so_far = ``
@@ -33,7 +56,7 @@ export default ({ type_callback = null, prompt_callback, line_prompt = `> `, inp
 		output.write(ansi.cursor.left)
 	}
 
-	const log = (string, updater) => {
+	const log: LogFn = (string, updater) => {
 		const log_line = lines_written
 		reset_line()
 		output.write(string)
@@ -55,7 +78,7 @@ export default ({ type_callback = null, prompt_callback, line_prompt = `> `, inp
 	}
 
 	const output_intercepter = new Writable({
-		write(chunk, encoding, callback) {
+		write(chunk: Buffer, encoding, callback) {
 			const character = chunk.toString()
 
 			const char_code = character.charCodeAt(0)
@@ -125,4 +148,3 @@ export default ({ type_callback = null, prompt_callback, line_prompt = `> `, inp
 		},
 	}
 }
-

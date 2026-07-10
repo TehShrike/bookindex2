@@ -2,7 +2,7 @@
 // but without adding quotation marks to the result
 
 const CHARS_GLOBAL_REGEXP = /[\0\b\t\n\r\x1a\"\'\\]/g // eslint-disable-line no-control-regex
-const CHARS_ESCAPE_MAP = {
+const CHARS_ESCAPE_MAP: Record<string, string> = {
 	'\0': `\\0`,
 	'\b': `\\b`,
 	'\t': `\\t`,
@@ -14,26 +14,26 @@ const CHARS_ESCAPE_MAP = {
 	'\\': `\\\\`,
 }
 
-export default val => {
-	let chunkIndex = 0
-	let escapedVal = ``
+export default (val: string): string => {
+	let chunk_index = 0
+	let escaped_val = ``
 	let match
 
 	CHARS_GLOBAL_REGEXP.lastIndex = 0
 
 	while ((match = CHARS_GLOBAL_REGEXP.exec(val))) {
-		escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]]
-		chunkIndex = CHARS_GLOBAL_REGEXP.lastIndex
+		escaped_val += val.slice(chunk_index, match.index) + CHARS_ESCAPE_MAP[match[0]]
+		chunk_index = CHARS_GLOBAL_REGEXP.lastIndex
 	}
 
-	if (chunkIndex === 0) {
+	if (chunk_index === 0) {
 		// Nothing was escaped
 		return val
 	}
 
-	if (chunkIndex < val.length) {
-		return escapedVal + val.slice(chunkIndex)
+	if (chunk_index < val.length) {
+		return escaped_val + val.slice(chunk_index)
 	}
 
-	return escapedVal
+	return escaped_val
 }

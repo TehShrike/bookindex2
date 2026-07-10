@@ -1,13 +1,24 @@
-import make_fully_managed_terminal from './fully_managed_terminal.js'
-import styles from 'shared/terminal_styles.js'
+import make_fully_managed_terminal from './fully_managed_terminal.ts'
+import styles from '#shared/terminal_styles.ts'
+import type { TerminalStyle } from '#shared/terminal_styles.ts'
 
 const NUMBER_OF_LINES = 5
 
-const wrap_with_style = (terminal_style, string) => terminal_style.open + string + terminal_style.close
+const wrap_with_style = (terminal_style: TerminalStyle, string: string): string => terminal_style.open + string + terminal_style.close
 
-// search_function should return Array<{ display: string, result: T }>>
-export default ({ search_function, selection_callback }) => {
-	let latest_type_promise = null
+export type SearchResult = {
+	display: string,
+}
+
+export type SearchFunction<T extends SearchResult = SearchResult> = (query: string) => Promise<T[]>
+
+export type SelectionCallback<T extends SearchResult = SearchResult> = (selection: T | null) => void
+
+export default <T extends SearchResult>({ search_function, selection_callback }: {
+	search_function: SearchFunction<T>,
+	selection_callback: SelectionCallback<T>,
+}): { stop: () => void } => {
+	let latest_type_promise: Promise<T[] | null> | null = null
 
 	const { log, stop } = make_fully_managed_terminal({
 		line_prompt: `search> `,
@@ -20,7 +31,7 @@ export default ({ search_function, selection_callback }) => {
 			}
 
 			latest_type_promise = search_function(line_so_far)
-			const responses = await latest_type_promise
+			const responses = (await latest_type_promise)!
 			const blank_lines = Math.max(0, results_update_fns.length - responses.length)
 			top_update_fn(wrap_with_style(styles.yellow, wrap_with_style(styles.bold, responses.length.toString()) + ` results`))
 
