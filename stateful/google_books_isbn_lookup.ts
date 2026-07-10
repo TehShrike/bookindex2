@@ -1,21 +1,21 @@
 import p_throttle from 'p-throttle'
 import { get } from 'httpie'
 
-type Google_industry_identifier = {
+type GoogleIndustryIdentifier = {
 	type: string,
 	identifier: string,
 }
 
-type Google_volume_info = {
+type GoogleVolumeInfo = {
 	title: string,
 	subtitle?: string,
 	authors?: string[],
 	publishedDate?: string,
-	industryIdentifiers: Google_industry_identifier[],
+	industryIdentifiers: GoogleIndustryIdentifier[],
 }
 
-type Google_books_response = {
-	items?: { volumeInfo: Google_volume_info }[] | null,
+type GoogleBooksResponse = {
+	items?: { volumeInfo: GoogleVolumeInfo }[] | null,
 }
 
 const isbn_identifier_types = new Set([
@@ -31,7 +31,7 @@ export default ({ api_key }: { api_key: string }) => {
 	})
 
 	return throttle((isbn: string) =>
-		get<Google_books_response>(
+		get<GoogleBooksResponse>(
 			`https://content-books.googleapis.com/books/v1/volumes?q=isbn%3A${ isbn }&key=${ api_key }`,
 		).then(
 			({ data }) => {

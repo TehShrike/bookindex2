@@ -7,18 +7,18 @@ import dumb_terminal_state_machine from '#shared/dumb_terminal_state_machine.ts'
 import * as message from '#shared/message_updates.ts'
 
 import type { Connection, RowDataPacket } from 'mysql2/promise'
-import type { Updater, Update_fn } from '#shared/fully_managed_terminal.ts'
-import type { Terminal_state } from '#shared/dumb_terminal_state_machine.ts'
+import type { Updater, UpdateFn } from '#shared/fully_managed_terminal.ts'
+import type { TerminalState } from '#shared/dumb_terminal_state_machine.ts'
 import type { Context } from '../../index.ts'
 
-type Location_row = {
+type LocationRow = {
 	location_id: number,
 	barcode: string,
 	name: string,
 }
 
-const look_up_location = async(mysql: Connection, barcode: string): Promise<Location_row | null> => {
-	const [ [ book ] ] = await mysql.query<(Location_row & RowDataPacket)[]>(sql`
+const look_up_location = async(mysql: Connection, barcode: string): Promise<LocationRow | null> => {
+	const [ [ book ] ] = await mysql.query<(LocationRow & RowDataPacket)[]>(sql`
 		SELECT location_id, barcode, name
 		FROM location
 		WHERE barcode = ${ barcode }`,
@@ -30,13 +30,13 @@ const look_up_location = async(mysql: Connection, barcode: string): Promise<Loca
 export default async({ isbn_lookup, mysql }: Context) => {
 	const look_up_book = make_look_up_book({ isbn_lookup, mysql })
 
-	let current_location: Location_row | null = null
+	let current_location: LocationRow | null = null
 
 	const apply_location_barcode = async({ log, update, location_barcode }: {
-		log(message: string, updater?: Updater | string): Update_fn,
-		update: Update_fn,
+		log(message: string, updater?: Updater | string): UpdateFn,
+		update: UpdateFn,
 		location_barcode: string,
-	}): Promise<Terminal_state> => {
+	}): Promise<TerminalState> => {
 		const location = await look_up_location(mysql, location_barcode)
 
 		if (location) {
@@ -54,7 +54,7 @@ export default async({ isbn_lookup, mysql }: Context) => {
 		}
 	}
 
-	const NO_LOCATION: Terminal_state = {
+	const NO_LOCATION: TerminalState = {
 		prompt: `Scan a location:`,
 		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {
@@ -70,7 +70,7 @@ export default async({ isbn_lookup, mysql }: Context) => {
 		},
 	}
 
-	const AT_LOCATION: Terminal_state = {
+	const AT_LOCATION: TerminalState = {
 		prompt: `Scan a location or book...`,
 		async fn({ log, update, line: barcode }) {
 			if (barcode === ``) {

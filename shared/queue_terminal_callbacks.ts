@@ -1,20 +1,20 @@
 import create_fully_managed_terminal from './fully_managed_terminal.ts'
-import type { Log_fn, Terminal_options, Update_fn } from './fully_managed_terminal.ts'
+import type { LogFn, TerminalOptions, UpdateFn } from './fully_managed_terminal.ts'
 import create_deferred from 'p-defer'
 
-export type Queued_line = {
+export type QueuedLine = {
 	line: string,
-	update: Update_fn,
+	update: UpdateFn,
 }
 
-export type Queue_terminal = {
+export type QueueTerminal = {
 	stop: () => void,
-	log: Log_fn,
-	get_next: () => Promise<Queued_line>,
+	log: LogFn,
+	get_next: () => Promise<QueuedLine>,
 }
 
-export default (options: Omit<Terminal_options, 'prompt_callback'> = {}): Queue_terminal => {
-	const queue: Queued_line[] = []
+export default (options: Omit<TerminalOptions, 'prompt_callback'> = {}): QueueTerminal => {
+	const queue: QueuedLine[] = []
 	let next_deferred = create_deferred<void>()
 
 	const { stop, log } = create_fully_managed_terminal({

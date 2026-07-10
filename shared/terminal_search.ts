@@ -1,22 +1,22 @@
 import make_fully_managed_terminal from './fully_managed_terminal.ts'
 import styles from '#shared/terminal_styles.ts'
-import type { Terminal_style } from '#shared/terminal_styles.ts'
+import type { TerminalStyle } from '#shared/terminal_styles.ts'
 
 const NUMBER_OF_LINES = 5
 
-const wrap_with_style = (terminal_style: Terminal_style, string: string): string => terminal_style.open + string + terminal_style.close
+const wrap_with_style = (terminal_style: TerminalStyle, string: string): string => terminal_style.open + string + terminal_style.close
 
-export type Search_result = {
+export type SearchResult = {
 	display: string,
 }
 
-export type Search_function<T extends Search_result = Search_result> = (query: string) => Promise<T[]>
+export type SearchFunction<T extends SearchResult = SearchResult> = (query: string) => Promise<T[]>
 
-export type Selection_callback<T extends Search_result = Search_result> = (selection: T | null) => void
+export type SelectionCallback<T extends SearchResult = SearchResult> = (selection: T | null) => void
 
-export default <T extends Search_result>({ search_function, selection_callback }: {
-	search_function: Search_function<T>,
-	selection_callback: Selection_callback<T>,
+export default <T extends SearchResult>({ search_function, selection_callback }: {
+	search_function: SearchFunction<T>,
+	selection_callback: SelectionCallback<T>,
 }): { stop: () => void } => {
 	let latest_type_promise: Promise<T[] | null> | null = null
 

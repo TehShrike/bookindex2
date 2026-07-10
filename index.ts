@@ -11,11 +11,11 @@ import live_stocktake from './menu_items/live_stocktake/live_stocktake.ts'
 import search from './menu_items/search/search.ts'
 
 import type { Connection, ConnectionOptions } from 'mysql2/promise'
-import type { Isbn_lookup } from '#shared/look_up_book.ts'
+import type { IsbnLookup } from '#shared/look_up_book.ts'
 
 export type Context = {
 	mysql: Connection,
-	isbn_lookup: Isbn_lookup,
+	isbn_lookup: IsbnLookup,
 	scanner_file_path: string,
 }
 
@@ -29,7 +29,7 @@ type Config = {
 const make_isbn_lookup = async({ google_cloud_api_key, isbndb_rest_key }: {
 	google_cloud_api_key: string,
 	isbndb_rest_key: string,
-}): Promise<Isbn_lookup> => {
+}): Promise<IsbnLookup> => {
 	const isbndb_lookup = make_isbndb_lookup(isbndb_rest_key)
 	const google_lookup = make_google_lookup({ api_key: google_cloud_api_key })
 

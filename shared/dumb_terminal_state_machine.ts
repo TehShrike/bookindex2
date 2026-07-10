@@ -1,18 +1,18 @@
 import create_queue_terminal from '#shared/queue_terminal_callbacks.ts'
-import type { Log_fn, Update_fn } from '#shared/fully_managed_terminal.ts'
+import type { LogFn, UpdateFn } from '#shared/fully_managed_terminal.ts'
 
-export type Terminal_state_arg = {
-	log: Log_fn,
-	update: Update_fn,
+export type TerminalStateArg = {
+	log: LogFn,
+	update: UpdateFn,
 	line: string,
 }
 
-export type Terminal_state = {
+export type TerminalState = {
 	prompt: string,
-	fn: (arg: Terminal_state_arg) => Promise<Terminal_state | void> | Terminal_state | void,
+	fn: (arg: TerminalStateArg) => Promise<TerminalState | void> | TerminalState | void,
 }
 
-export default async (state: Terminal_state | void): Promise<void> => {
+export default async (state: TerminalState | void): Promise<void> => {
 	const { log, stop, get_next } = create_queue_terminal()
 
 	try {

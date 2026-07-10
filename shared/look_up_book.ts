@@ -5,14 +5,14 @@ import transaction from '#shared/transaction.ts'
 
 import type { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
 
-export type Book_row = {
+export type BookRow = {
 	book_id: number,
 	title: string,
 	subtitle: string | null,
 	location_id: number | null,
 }
 
-export type Book_from_api = {
+export type BookFromApi = {
 	title: string,
 	subtitle: string | null,
 	authors: string[] | null,
@@ -20,7 +20,7 @@ export type Book_from_api = {
 	source: string,
 }
 
-export type Isbn_lookup = (isbn: string) => Promise<Book_from_api | null>
+export type IsbnLookup = (isbn: string) => Promise<BookFromApi | null>
 
 const select_book_by_isbn = (isbn: string) => q.select(`book.book_id, book.title, book.subtitle, book.location_id`)
 	.from(`isbn`)
@@ -29,8 +29,8 @@ const select_book_by_isbn = (isbn: string) => q.select(`book.book_id, book.title
 	.where(`isbn.isbn`, isbn)
 	.build()
 
-export default ({ isbn_lookup, mysql }: { isbn_lookup: Isbn_lookup, mysql: Connection }) => async (isbn: string): Promise<Book_row | null> => {
-	const [ [ book_in_db ] ] = await mysql.query<(Book_row & RowDataPacket)[]>(select_book_by_isbn(isbn))
+export default ({ isbn_lookup, mysql }: { isbn_lookup: IsbnLookup, mysql: Connection }) => async (isbn: string): Promise<BookRow | null> => {
+	const [ [ book_in_db ] ] = await mysql.query<(BookRow & RowDataPacket)[]>(select_book_by_isbn(isbn))
 
 	if (book_in_db) {
 		return book_in_db
@@ -52,7 +52,7 @@ const insert_single_column = (table: string, column: string, values: string[]) =
 		${ values.map(value => sql`(${ value })`).join(`, `) }
 `
 
-const insert_book_from_api = async (mysql: Connection, book_from_api: Book_from_api): Promise<Book_row> => {
+const insert_book_from_api = async (mysql: Connection, book_from_api: BookFromApi): Promise<BookRow> => {
 	const { title, subtitle, authors, isbns, source } = book_from_api
 
 	return await transaction(mysql, async () => {

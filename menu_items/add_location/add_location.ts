@@ -5,17 +5,17 @@ import dumb_terminal_state_machine from '#shared/dumb_terminal_state_machine.ts'
 import { success, failure, location } from '#shared/message_updates.ts'
 
 import type { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise'
-import type { Terminal_state } from '#shared/dumb_terminal_state_machine.ts'
+import type { TerminalState } from '#shared/dumb_terminal_state_machine.ts'
 import type { Context } from '../../index.ts'
 
-type Location_row = {
+type LocationRow = {
 	location_id: number,
 	barcode: string,
 	name: string,
 }
 
-const look_up_location = async(mysql: Connection, barcode: string): Promise<Location_row | null> => {
-	const [ [ book ] ] = await mysql.query<(Location_row & RowDataPacket)[]>(sql`
+const look_up_location = async(mysql: Connection, barcode: string): Promise<LocationRow | null> => {
+	const [ [ book ] ] = await mysql.query<(LocationRow & RowDataPacket)[]>(sql`
 		SELECT location_id, barcode, name
 		FROM location
 		WHERE barcode = ${ barcode }`,
@@ -25,7 +25,7 @@ const look_up_location = async(mysql: Connection, barcode: string): Promise<Loca
 }
 
 export default async({ mysql }: Context) => {
-	const SCAN_LOCATION: Terminal_state = {
+	const SCAN_LOCATION: TerminalState = {
 		prompt: `Scan a new location...`,
 		async fn({ log, line: location_barcode, update }) {
 			if (location_barcode.length === 0) {
@@ -52,7 +52,7 @@ export default async({ mysql }: Context) => {
 		},
 	}
 
-	const UPDATE_EXISTING_LOCATION = (existing_location: Location_row): Terminal_state => ({
+	const UPDATE_EXISTING_LOCATION = (existing_location: LocationRow): TerminalState => ({
 		prompt: `That location already exists with the name ${ existing_location.name }, type in a new name for it or hit enter to leave it alone:`,
 		async fn({ line: new_name, update }) {
 			if (new_name) {
@@ -65,7 +65,7 @@ export default async({ mysql }: Context) => {
 		},
 	})
 
-	const CREATE_NEW_LOCATION = (location_barcode: string): Terminal_state => ({
+	const CREATE_NEW_LOCATION = (location_barcode: string): TerminalState => ({
 		prompt: `What name shall we give this new location?`,
 		async fn({ line: name, update }) {
 			if (name) {

@@ -18,30 +18,30 @@ const down_arrow = Buffer.from([ 27, 91, 66 ])
 const right_arrow = Buffer.from([ 27, 91, 67 ])
 const left_arrow = Buffer.from([ 27, 91, 68 ])
 
-export type Update_fn = (update_value: string) => void
+export type UpdateFn = (update_value: string) => void
 
 export type Updater = (update_value: string) => string
 
-export type Log_fn = (string: string, updater?: Updater) => Update_fn
+export type LogFn = (string: string, updater?: Updater) => UpdateFn
 
-export type Prompt_callback = (line: string, update: Update_fn) => void
+export type PromptCallback = (line: string, update: UpdateFn) => void
 
-export type Type_callback = (line_so_far: string) => void
+export type TypeCallback = (line_so_far: string) => void
 
-export type Terminal_options = {
-	type_callback?: Type_callback | null,
-	prompt_callback: Prompt_callback,
+export type TerminalOptions = {
+	type_callback?: TypeCallback | null,
+	prompt_callback: PromptCallback,
 	line_prompt?: string,
 	input?: NodeJS.ReadStream,
 	output?: NodeJS.WriteStream,
 }
 
-export type Fully_managed_terminal = {
-	log: Log_fn,
+export type FullyManagedTerminal = {
+	log: LogFn,
 	stop: () => void,
 }
 
-export default ({ type_callback = null, prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }: Terminal_options): Fully_managed_terminal => {
+export default ({ type_callback = null, prompt_callback, line_prompt = `> `, input = process.stdin, output = process.stdout }: TerminalOptions): FullyManagedTerminal => {
 	let lines_written = 0
 	let probable_cursor_position = 0
 	let current_line_so_far = ``
@@ -56,7 +56,7 @@ export default ({ type_callback = null, prompt_callback, line_prompt = `> `, inp
 		output.write(ansi.cursor.left)
 	}
 
-	const log: Log_fn = (string, updater) => {
+	const log: LogFn = (string, updater) => {
 		const log_line = lines_written
 		reset_line()
 		output.write(string)

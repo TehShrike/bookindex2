@@ -7,10 +7,10 @@ import styles from '#shared/terminal_styles.ts'
 import * as message from '#shared/message_updates.ts'
 
 import type { RowDataPacket } from 'mysql2/promise'
-import type { Terminal_style } from '#shared/terminal_styles.ts'
+import type { TerminalStyle } from '#shared/terminal_styles.ts'
 import type { Context } from '../../index.ts'
 
-type Book_search_row = {
+type BookSearchRow = {
 	book_id: number,
 	title: string,
 	subtitle: string | null,
@@ -18,11 +18,11 @@ type Book_search_row = {
 	author_names: string[],
 }
 
-type Book_search_result = Omit<Book_search_row, 'location_name'> & {
+type BookSearchResult = Omit<BookSearchRow, 'location_name'> & {
 	display: string,
 }
 
-const wrap_with_style = (terminal_style: Terminal_style, string: string): string => terminal_style.open + string + terminal_style.close
+const wrap_with_style = (terminal_style: TerminalStyle, string: string): string => terminal_style.open + string + terminal_style.close
 
 const book_display = ({ title, subtitle }: { title: string, subtitle: string | null }): string => {
 	let display = message.book(wrap_with_style(styles.cyan, title))
@@ -39,9 +39,9 @@ const author_display = (author_name: string): string => message.author(wrap_with
 export default async({ mysql }: Context) => {
 	const deferred = defer<void>()
 
-	const { stop } = make_terminal_search<Book_search_result>({
+	const { stop } = make_terminal_search<BookSearchResult>({
 		async search_function(line_so_far) {
-			const [ books ] = await mysql.query<(Book_search_row & RowDataPacket)[]>(
+			const [ books ] = await mysql.query<(BookSearchRow & RowDataPacket)[]>(
 				q.select(
 					`book.book_id, book.title, book.subtitle`,
 					`location.name AS location_name`,

@@ -1,12 +1,12 @@
 import get_barcode_type from './get_barcode_type.ts'
-import type { Barcode_type } from './get_barcode_type.ts'
+import type { BarcodeType } from './get_barcode_type.ts'
 
-export type Parsed_barcode = {
+export type ParsedBarcode = {
 	barcode: string,
-	type: Barcode_type | null,
+	type: BarcodeType | null,
 }
 
-export default (csv: string): Parsed_barcode[] => {
+export default (csv: string): ParsedBarcode[] => {
 	const lines = csv.split(/\r?\n/g).filter(_ => _)
 	const barcodes = lines.map(line => line.split(`,`).pop()!)
 

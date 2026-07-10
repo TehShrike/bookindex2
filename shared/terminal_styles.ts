@@ -50,9 +50,9 @@ const codes = {
 	bg_bright_white: [ 107, 49 ],
 }
 
-export type Style_name = keyof typeof codes
+export type StyleName = keyof typeof codes
 
-export type Terminal_style = {
+export type TerminalStyle = {
 	open: string,
 	close: string,
 }
@@ -60,4 +60,4 @@ export type Terminal_style = {
 export default Object.fromEntries(Object.entries(codes).map(([ key, val ]) => [ key, {
 	open: `\u001b[` + val[0] + `m`,
 	close: `\u001b[` + val[1] + `m`,
-}])) as Record<Style_name, Terminal_style>
+}])) as Record<StyleName, TerminalStyle>

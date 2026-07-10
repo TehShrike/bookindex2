@@ -15,25 +15,25 @@ const CHARS_ESCAPE_MAP: Record<string, string> = {
 }
 
 export default (val: string): string => {
-	let chunkIndex = 0
-	let escapedVal = ``
+	let chunk_index = 0
+	let escaped_val = ``
 	let match
 
 	CHARS_GLOBAL_REGEXP.lastIndex = 0
 
 	while ((match = CHARS_GLOBAL_REGEXP.exec(val))) {
-		escapedVal += val.slice(chunkIndex, match.index) + CHARS_ESCAPE_MAP[match[0]]
-		chunkIndex = CHARS_GLOBAL_REGEXP.lastIndex
+		escaped_val += val.slice(chunk_index, match.index) + CHARS_ESCAPE_MAP[match[0]]
+		chunk_index = CHARS_GLOBAL_REGEXP.lastIndex
 	}
 
-	if (chunkIndex === 0) {
+	if (chunk_index === 0) {
 		// Nothing was escaped
 		return val
 	}
 
-	if (chunkIndex < val.length) {
-		return escapedVal + val.slice(chunkIndex)
+	if (chunk_index < val.length) {
+		return escaped_val + val.slice(chunk_index)
 	}
 
-	return escapedVal
+	return escaped_val
 }

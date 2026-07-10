@@ -3,9 +3,9 @@ import { get } from 'httpie'
 
 import unreverse_names from '#shared/unreverse_names.ts'
 
-import type { Book_from_api } from '#shared/look_up_book.ts'
+import type { BookFromApi } from '#shared/look_up_book.ts'
 
-type Isbndb_book = {
+type IsbndbBook = {
 	title_long: string,
 	authors?: string[] | null,
 	isbn?: string,
@@ -13,11 +13,11 @@ type Isbndb_book = {
 	other_isbns?: { isbn: string }[] | null,
 }
 
-type Isbndb_response = {
-	book?: Isbndb_book,
+type IsbndbResponse = {
+	book?: IsbndbBook,
 }
 
-const translate_response_to_expected_shape = (response: Isbndb_response): Book_from_api | null => {
+const translate_response_to_expected_shape = (response: IsbndbResponse): BookFromApi | null => {
 	if (!response.book) {
 		return null
 	}
@@ -60,7 +60,7 @@ export default (api_key: string) => {
 		}
 
 		try {
-			const { data: response } = await get<Isbndb_response>(`https://api2.isbndb.com/book/${ isbn }`, {
+			const { data: response } = await get<IsbndbResponse>(`https://api2.isbndb.com/book/${ isbn }`, {
 				headers: {
 					Authorization: api_key,
 				},
